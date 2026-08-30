@@ -18,7 +18,7 @@ public sealed record TextEdit(
     string NewText);
 
 /// <summary>
-/// Filesystem tools scoped to a single Obsidian vault. Every path is validated by
+/// Filesystem tools scoped to a single Personal vault. Every path is validated by
 /// <see cref="VaultPathResolver"/> before any I/O happens, so nothing can read or
 /// write outside the configured vault root.
 /// </summary>

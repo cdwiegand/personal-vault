@@ -106,7 +106,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => Results.Text(
-    $"Obsidian Vault MCP server is running.\nMCP endpoint: {authOptions.ResourceUrl}\n", "text/plain"));
+    $"Personal Vault MCP server is running.\nMCP endpoint: {authOptions.ResourceUrl}\n", "text/plain"));
 
 app.MapOAuthServer();
 app.MapMcp("/mcp").RequireAuthorization();
@@ -122,7 +122,7 @@ return 0;
 static IEnumerable<string> Validate(VaultServerOptions vault, AuthOptions auth)
 {
     if (string.IsNullOrWhiteSpace(vault.Root))
-        yield return "Vault:Root is required (absolute path to your Obsidian vault).";
+        yield return "Vault:Root is required (absolute path to your Personal vault).";
     else if (!Directory.Exists(vault.Root))
         yield return $"Vault:Root does not exist: {vault.Root}";
 

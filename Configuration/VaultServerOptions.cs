@@ -8,7 +8,7 @@ public sealed class VaultServerOptions
 {
     public const string SectionName = "Vault";
 
-    /// <summary>Absolute path to the Obsidian vault root. All tools are confined to this directory.</summary>
+    /// <summary>Absolute path to the Personal vault root. All tools are confined to this directory.</summary>
     public string Root { get; set; } = "";
 
     /// <summary>When true, every mutating tool (write/edit/move/create/delete) is disabled.</summary>

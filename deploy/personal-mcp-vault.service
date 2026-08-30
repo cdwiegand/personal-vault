@@ -1,0 +1,36 @@
+# systemd unit — install to /etc/systemd/system/personal-vault-mcp.service
+#
+#   sudo cp deploy/personal-vault-mcp.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now personal-vault-mcp
+#   journalctl -u personal-vault-mcp -f
+#
+# Secrets live in /etc/personal-vault-mcp.env (chmod 600, root-owned) — see README.
+
+[Unit]
+Description=Personal Vault MCP server
+After=network.target
+
+[Service]
+Type=simple
+# A dedicated, unprivileged user that can read the vault:
+User=vaultmcp
+Group=vaultmcp
+WorkingDirectory=/opt/personal-vault-mcp
+ExecStart=/usr/bin/dotnet /opt/personal-vault-mcp/PersonalMcpVault.dll
+EnvironmentFile=/etc/personal-vault-mcp.env
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5090
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+# Allow writing only the SQLite store dir (adjust to your Auth__StorePath):
+ReadWritePaths=/opt/personal-vault-mcp
+
+[Install]
+WantedBy=multi-user.target
