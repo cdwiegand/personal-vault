@@ -44,7 +44,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
     // Trust the co-located reverse proxy (Caddy/nginx) to set the real scheme/host.
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-    o.KnownNetworks.Clear();
+    o.KnownIPNetworks.Clear();
     o.KnownProxies.Clear();
 });
 
