@@ -1,0 +1,14 @@
+# Caddy reverse proxy — gives you automatic Let's Encrypt HTTPS on your domain.
+# Claude connectors REQUIRE a valid public HTTPS certificate; Caddy handles renewal.
+#
+# Point your domain's DNS A record at this VPS first, then:
+#   sudo caddy run --config /path/to/Caddyfile      (or use the caddy systemd service)
+
+vault.example.com {
+	reverse_proxy 127.0.0.1:5090
+
+	# The app already gates auth; this just tidies logs.
+	log {
+		output file /var/log/caddy/vault-mcp.log
+	}
+}
