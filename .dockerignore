@@ -1,0 +1,22 @@
+# Keep the build context small and secrets out of the image
+bin/
+obj/
+.git/
+.gitignore
+.vs/
+.vscode/
+.idea/
+test/
+deploy/
+vault/
+data/
+*.env
+.env
+oauth-store.db
+oauth-store.db-shm
+oauth-store.db-wal
+**/*.user
+.DS_Store
+Dockerfile
+docker-compose.yml
+README.md

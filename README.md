@@ -59,7 +59,7 @@ Minimum config:
 | `Vault__Root` | `/opt/personal-vault-mcp/vault` | Absolute path to your Personal vault |
 | `Auth__PublicBaseUrl` | `https://vault.example.com` | Exact HTTPS origin Claude reaches. No trailing slash/path. |
 | `Auth__Username` | `chris` | |
-| `Auth__PasswordHash` | `pbkdf2$210000$…` | From `hash-password` (or set `Auth__Password` for a plaintext dev shortcut) |
+| `Auth__PasswordHash` | `pbkdf2.210000.…` | From `hash-password` (or set `Auth__Password` for a plaintext dev shortcut) |
 | `Auth__JwtSigningKey` | base64, 32+ bytes | From `openssl rand`. Rotating it invalidates all sessions. |
 
 ## Run locally
@@ -75,6 +75,33 @@ dotnet run
 
 An end-to-end test of the whole OAuth + MCP flow lives in
 [`test/e2e.sh`](test/e2e.sh) — run it against a local build to verify everything.
+
+## Run with Docker
+
+A multi-stage [`Dockerfile`](Dockerfile) and [`docker-compose.yml`](docker-compose.yml) are included.
+Compose bind-mounts your vault from `./vault` and the OAuth store from `./data`.
+
+```bash
+ln -s /path/to/your/vault ./vault   # or move/copy your vault here
+mkdir -p data                        # SQLite store (OAuth clients + refresh tokens)
+
+cp .env.example .env
+openssl rand -base64 32                                           # -> Auth__JwtSigningKey in .env
+docker compose run --rm vault-mcp hash-password 'your-password'   # -> Auth__PasswordHash in .env
+# then edit .env: Auth__PublicBaseUrl, Auth__Username, the two secrets, and PUID/PGID (id -u / id -g)
+
+docker compose up -d --build
+```
+
+`PUID`/`PGID` must match the owner of `./vault` and `./data` so the container can read/write them.
+
+The app publishes only to `127.0.0.1:5090`; terminate TLS with a reverse proxy on the host — the
+[`Caddyfile`](deploy/Caddyfile) (automatic Let's Encrypt) or [`nginx.site.conf`](deploy/nginx.site.conf).
+Claude requires a valid public HTTPS cert. (To run Caddy in Docker too, add a `caddy` service to
+compose using [`deploy/Caddyfile.docker`](deploy/Caddyfile.docker).)
+
+> **Note:** the password hash uses `.` as its delimiter (not `$`) specifically so it survives
+> `.env` interpolation — paste the generated value as-is, no escaping needed.
 
 ## Deploy on a VPS
 

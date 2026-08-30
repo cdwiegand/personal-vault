@@ -19,7 +19,7 @@ public sealed class AuthOptions
     public string Username { get; set; } = "";
 
     /// <summary>
-    /// PBKDF2 password hash: "pbkdf2${iterations}${saltBase64}${hashBase64}".
+    /// PBKDF2 password hash: "pbkdf2.{iterations}.{saltBase64}.{hashBase64}".
     /// Generate one with: <c>dotnet run -- hash-password</c>.
     /// </summary>
     public string PasswordHash { get; set; } = "";

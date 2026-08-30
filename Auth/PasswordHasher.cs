@@ -4,7 +4,9 @@ namespace PersonalMcpVault.Auth;
 
 /// <summary>
 /// PBKDF2 (SHA-256) password hashing with a per-hash random salt, encoded as
-/// "pbkdf2$&lt;iterations&gt;$&lt;saltBase64&gt;$&lt;hashBase64&gt;". Verification is constant-time.
+/// "pbkdf2.&lt;iterations&gt;.&lt;saltBase64&gt;.&lt;hashBase64&gt;". Verification is constant-time.
+/// The delimiter is '.' (not '$') so the hash survives docker-compose .env interpolation,
+/// which would otherwise treat "$210000"/"$salt" as variable references and corrupt it.
 /// </summary>
 public static class PasswordHasher
 {
@@ -17,14 +19,15 @@ public static class PasswordHasher
     {
         var salt = RandomNumberGenerator.GetBytes(SaltSize);
         var key = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, Algorithm, KeySize);
-        return $"pbkdf2${iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(key)}";
+        return $"pbkdf2.{iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
     }
 
     public static bool Verify(string password, string encoded)
     {
         if (string.IsNullOrEmpty(encoded)) return false;
 
-        var parts = encoded.Split('$');
+        // Standard base64 uses '+', '/', '=' but never '.', so '.' is a safe delimiter.
+        var parts = encoded.StartsWith("pbkdf2$") ? encoded.Split('$') : encoded.Split('.');
         if (parts.Length != 4 || parts[0] != "pbkdf2") return false;
         if (!int.TryParse(parts[1], out var iterations) || iterations <= 0) return false;
 

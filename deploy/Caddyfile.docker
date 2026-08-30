@@ -1,0 +1,7 @@
+# Caddyfile used by the docker-compose `tls` profile.
+# Reaches the app over the compose network (service name), not localhost.
+# MCP_DOMAIN is supplied from .env via the caddy service's environment.
+
+{$MCP_DOMAIN} {
+	reverse_proxy vault-mcp:5090
+}

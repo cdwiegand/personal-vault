@@ -1,0 +1,33 @@
+name: personal-mcp-vault
+
+services:
+  vault-mcp:
+    build: .
+    image: personal-mcp-vault:latest
+    container_name: personal-mcp-vault
+    restart: unless-stopped
+
+    # Run as the host user that owns your vault so bind-mounted writes work.
+    # Match these to your vault's owner (defaults to the usual first Linux user).
+    user: "${PUID:-1000}:${PGID:-1000}"
+
+    # Secrets + PublicBaseUrl/Username come from .env (copy from .env.example).
+    env_file:
+      - .env
+    environment:
+      Vault__Root: /vault
+      Vault__ReadOnly: "false"
+      Vault__AllowDelete: "false"
+      Auth__StorePath: /data/oauth-store.db
+      ASPNETCORE_URLS: http://0.0.0.0:5090
+
+    volumes:
+      # Your Personal vault, bind-mounted from the host.
+      - ./vault:/vault
+      # Persists OAuth client registrations + refresh tokens across restarts.
+      - ./data:/data
+
+    # Publish only to host loopback; a reverse proxy (host Caddy, or the `tls` profile below)
+    # terminates HTTPS in front of it. Claude requires public HTTPS with a valid cert.
+    ports:
+      - "127.0.0.1:5090:5090"
