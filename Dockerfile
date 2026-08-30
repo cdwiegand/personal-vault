@@ -16,19 +16,16 @@ RUN dotnet publish PersonalMcpVault.csproj -c Release -o /app --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Non-root user (compose can override the UID/GID to match your vault's owner).
-RUN adduser --disabled-password --gecos "" --uid 10001 appuser \
-    && mkdir -p /data && chown appuser:appuser /data
+RUN mkdir -p /data && chown app:app /data
 
 COPY --from=build /app ./
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:5090 \
-    DOTNET_CLI_TELEMETRY_OPTOUT=1 \
-    Auth__StorePath=/data/oauth-store.db
+    DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 EXPOSE 5090
 VOLUME ["/data"]
-USER appuser
+USER app
 
 # `dotnet ... hash-password` still works: run  `docker compose run --rm vault-mcp hash-password`
 ENTRYPOINT ["dotnet", "PersonalMcpVault.dll"]
