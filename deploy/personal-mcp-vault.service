@@ -18,7 +18,7 @@ User=vaultmcp
 Group=vaultmcp
 WorkingDirectory=/opt/personal-vault-mcp
 ExecStart=/usr/bin/dotnet /opt/personal-vault-mcp/PersonalMcpVault.dll
-EnvironmentFile=/etc/personal-vault-mcp.env
+EnvironmentFile=/opt/personal-vault-mcp/personal-vault-mcp.env
 Environment=ASPNETCORE_URLS=http://127.0.0.1:5090
 Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
 Restart=on-failure

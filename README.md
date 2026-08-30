@@ -56,7 +56,7 @@ Minimum config:
 
 | Key | Example | Notes |
 |-----|---------|-------|
-| `Vault__Root` | `/home/chris/vault` | Absolute path to your Personal vault |
+| `Vault__Root` | `/opt/personal-vault-mcp/vault` | Absolute path to your Personal vault |
 | `Auth__PublicBaseUrl` | `https://vault.example.com` | Exact HTTPS origin Claude reaches. No trailing slash/path. |
 | `Auth__Username` | `chris` | |
 | `Auth__PasswordHash` | `pbkdf2$210000$…` | From `hash-password` (or set `Auth__Password` for a plaintext dev shortcut) |
@@ -84,12 +84,13 @@ An end-to-end test of the whole OAuth + MCP flow lives in
    # scp ./publish/* to /opt/personal-vault-mcp/ on the VPS
    ```
 2. **DNS**: point `vault.example.com`'s A record at the VPS (public IPv4).
-3. **Secrets**: `sudo cp deploy/personal-vault-mcp.env.example /etc/personal-vault-mcp.env`,
-   fill it in, `sudo chmod 600 /etc/personal-vault-mcp.env`.
+3. **Secrets**: `sudo cp deploy/personal-vault-mcp.env.example /opt/personal-vault-mcp/personal-vault-mcp.env`,
+   fill it in, `sudo chmod 600 /opt/personal-vault-mcp/personal-vault-mcp.env`.
 4. **Service**: install [`deploy/personal-vault-mcp.service`](deploy/personal-vault-mcp.service),
    then `sudo systemctl enable --now personal-vault-mcp`.
 5. **TLS**: put [`deploy/Caddyfile`](deploy/Caddyfile) in front — Caddy reverse-proxies
-   `127.0.0.1:5090` and gets an automatic Let's Encrypt cert.
+   `127.0.0.1:5090` and gets an automatic Let's Encrypt cert, or if using Nginx adapt
+   the `nginx.site.conf` file as desired.
 
 ## Connect Claude
 
